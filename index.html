@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>E. coli binding & affinity atlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.1/3Dmol-min.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">E. coli • evidence-graded molecular comparison</p>
+        <h1>Binding & affinity atlas</h1>
+        <p class="lede">Antibiotic inhibition and native-substrate recognition shown on one honest scale—without treating unlike assay values as identical.</p>
+      </div>
+      <div class="legend" aria-label="Color legend">
+        <span><i class="swatch drug"></i>Antibiotic / inhibitor</span>
+        <span><i class="swatch target"></i>Biological target / enzyme</span>
+        <span><i class="swatch substrate"></i>Native substrate</span>
+      </div>
+    </header>
+
+    <section class="scale-section" aria-labelledby="scale-title">
+      <div class="section-heading">
+        <div>
+          <p class="kicker">Quantitative comparison</p>
+          <h2 id="scale-title">Lower value = tighter apparent binding</h2>
+        </div>
+        <p class="scope-note">Log scale in µM. K<sub>d</sub>, K<sub>a</sub>-derived K<sub>d</sub>, and IC<sub>50,app</sub> remain visibly separated.</p>
+      </div>
+      <div class="affinity-chart" role="img" aria-label="Logarithmic affinity comparison from 0.0001 to 10 micromolar">
+        <div class="axis-labels" aria-hidden="true">
+          <span>0.0001</span><span>0.001</span><span>0.01</span><span>0.1</span><span>1</span><span>10 µM</span>
+        </div>
+        <div class="axis-track" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <button class="range-marker substrate-marker" style="--start:38.4%;--end:67.9%;--row:0" data-case="trna" aria-label="tRNA with programmed E. coli 70S ribosome, Kd range 0.0083 to 0.25 micromolar">
+          <span class="range-line"></span><strong>tRNA ↔ programmed 70S</strong><small>0.0083–0.25 µM K<sub>d</sub></small>
+        </button>
+        <button class="point-marker drug-marker" style="--pos:46%;--row:1" data-case="cef" aria-label="Cefuroxime and PBP3, apparent IC50 0.02 micromolar">
+          <span class="dot"></span><strong>CEF → PBP3</strong><small>0.02 ± 0.01 µM IC<sub>50,app</sub></small>
+        </button>
+        <button class="point-marker drug-marker" style="--pos:86.8%;--row:2" data-case="cam" aria-label="Chloramphenicol and ribosome, Kd 2.2 micromolar">
+          <span class="dot"></span><strong>CAM ↔ ribosome</strong><small>2.2 µM K<sub>d</sub></small>
+        </button>
+        <button class="nd-marker" data-case="pbp-native" aria-label="PBP3 native substrate affinity not determined">
+          <strong>PBP3 ↔ stem peptide</strong><small>N.D. — no defensible E. coli K<sub>d</sub> located</small>
+        </button>
+      </div>
+      <p class="chart-caveat"><b>Do not rank the mechanisms by these numbers alone.</b> Cefuroxime is a time-dependent covalent inhibitor, whereas the displayed tRNA values depend strongly on ribosomal site, mRNA, Mg²⁺ and elongation factors.</p>
+    </section>
+
+    <section class="explorer" aria-labelledby="explorer-title">
+      <div class="section-heading compact">
+        <div>
+          <p class="kicker">Interactive structures</p>
+          <h2 id="explorer-title">Drag to rotate • scroll to zoom</h2>
+        </div>
+        <div class="viewer-actions">
+          <button id="focus-overview" type="button">Overview</button>
+          <button id="focus-site" type="button">Binding site</button>
+          <button id="toggle-interactions" type="button" aria-pressed="false">Interactions</button>
+          <button id="toggle-spin" type="button" aria-pressed="false">Auto-rotate</button>
+        </div>
+      </div>
+
+      <div class="case-tabs" role="tablist" aria-label="Molecular cases">
+        <button role="tab" aria-selected="true" aria-controls="panel-cam" id="tab-cam" data-case="cam">01 CAM + 50S</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-trna" id="tab-trna" data-case="trna">02 50S + tRNA</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-cef" id="tab-cef" data-case="cef">03 CEF + PBP3</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-pbp-native" id="tab-pbp-native" data-case="pbp-native">04 PBP3 + native substrate</button>
+      </div>
+
+      <div class="case-panel" id="panel-cam" role="tabpanel" aria-labelledby="tab-cam">
+        <div class="viewer-wrap"><div id="viewer-cam" class="viewer"><div class="loading">Loading 4V7T-derived model…</div></div></div>
+        <article class="case-copy">
+          <div class="case-number">01</div>
+          <p class="case-type">Reversible inhibitor • experimental ribosome pose</p>
+          <h3>Chloramphenicol + 50S ribosomal subunit</h3>
+          <p>CAM occupies the A-site cleft of the peptidyl-transferase centre in 23S rRNA and obstructs productive aminoacyl-tRNA accommodation.</p>
+          <dl>
+            <div><dt>Affinity</dt><dd>2.2 µM K<sub>d</sub>; independent historical estimates are ~2–3 µM.</dd></div>
+            <div><dt>Bonding</dt><dd>Non-covalent: H-bonding involving A2062/G2505, nitrobenzyl stacking on C2452, van der Waals contacts, and K⁺-mediated coordination in the pocket.</dd></div>
+            <div><dt>Structure</dt><dd>PDB 4V7T, E. coli 70S–chloramphenicol crystal structure; this view extracts one 50S particle and CLM.</dd></div>
+          </dl>
+          <p class="quality confirmed">Confirmed structure + literature-supported equilibrium affinity</p>
+        </article>
+      </div>
+
+      <div class="case-panel" id="panel-trna" role="tabpanel" aria-labelledby="tab-trna" hidden>
+        <div class="viewer-wrap"><div id="viewer-trna" class="viewer"><div class="loading">Loading native-complex structure…</div></div></div>
+        <article class="case-copy">
+          <div class="case-number">02</div>
+          <p class="case-type">Native substrate • functional 70S context</p>
+          <h3>50S catalytic centre + A/P-site tRNAs</h3>
+          <p>The 50S subunit catalyses peptide-bond formation between aminoacyl-tRNA in the A site and peptidyl-tRNA in the P site. tRNA binding spans both ribosomal subunits, so isolated-50S and programmed-70S values are not interchangeable.</p>
+          <dl>
+            <div><dt>Affinity</dt><dd>~0.0083–0.25 µM K<sub>d</sub>, calculated from published K<sub>a</sub> values of 0.4–12 × 10⁷ M⁻¹ for defined A/P/E-site ligands at 15 mM Mg²⁺.</dd></div>
+            <div><dt>Bonding</dt><dd>Extensive RNA–RNA recognition, codon–anticodon pairing on 30S, Mg²⁺-stabilized electrostatics, and 3′-CCA/end-group placement in the 50S PTC.</dd></div>
+            <div><dt>Structure</dt><dd>PDB 8G6Y, E. coli ribosome with A- and P-site tRNAs. The A-site monomer is non-natural; the tRNA/ribosome geometry is experimental.</dd></div>
+          </dl>
+          <p class="quality contextual">Confirmed structure; affinity is a context-dependent range from programmed 70S assays</p>
+        </article>
+      </div>
+
+      <div class="case-panel" id="panel-cef" role="tabpanel" aria-labelledby="tab-cef" hidden>
+        <div class="viewer-wrap"><div id="viewer-cef" class="viewer"><div class="loading">Loading E. coli PBP3 docking model…</div></div></div>
+        <article class="case-copy">
+          <div class="case-number">03</div>
+          <p class="case-type">Time-dependent β-lactam inhibitor</p>
+          <h3>Cefuroxime + PBP3 (FtsI)</h3>
+          <p>CEF first forms a recognition complex, then its β-lactam carbonyl is attacked by catalytic Ser307 to form a long-lived acyl-enzyme and block septal transpeptidation.</p>
+          <dl>
+            <div><dt>Potency</dt><dd>0.02 ± 0.01 µM IC<sub>50,app</sub> in EDTA-permeabilized E. coli MG1655; 0.04 µg/mL (~0.094 µM) in E. coli DC2 independently supports PBP3 selectivity.</dd></div>
+            <div><dt>Bonding</dt><dd>Covalent acyl bond to Ser307 after ring opening; the oxyanion hole is defined by backbone nitrogens of Ser307 and Thr497, with Lys310/Ser359/Asn361/Lys494/Thr495/Gly496/Thr497 forming the catalytic environment.</dd></div>
+            <div><dt>Structure</dt><dd>E. coli PBP3 template PDB 4BJP with a locally generated geometric CEF pose. The viewer is not an experimental cefuroxime–EcPBP3 crystal structure and does not encode the acyl bond.</dd></div>
+          </dl>
+          <p class="quality mixed">Potency confirmed; displayed ligand pose is computational</p>
+        </article>
+      </div>
+
+      <div class="case-panel" id="panel-pbp-native" role="tabpanel" aria-labelledby="tab-pbp-native" hidden>
+        <div class="viewer-wrap"><div id="viewer-pbp-native" class="viewer"><div class="loading">Loading PBP3 active-site model…</div></div></div>
+        <article class="case-copy">
+          <div class="case-number">04</div>
+          <p class="case-type">Native enzymatic substrate • affinity gap disclosed</p>
+          <h3>PBP3 + peptidoglycan stem pentapeptide</h3>
+          <p>The donor substrate is L-Ala–γ-D-Glu–mDAP–D-Ala–D-Ala. Ser307 forms an acyl-enzyme with the penultimate D-Ala, the terminal D-Ala leaves, and the mDAP amine of an acceptor stem resolves the intermediate to create the cross-link.</p>
+          <dl>
+            <div><dt>Affinity</dt><dd>N.D. A defensible direct K<sub>d</sub> for native E. coli PBP3–stem-peptide binding was not located. Catalytic substrate recognition cannot be replaced safely by a β-lactam IC<sub>50</sub>.</dd></div>
+            <div><dt>Bonding</dt><dd>Transient covalent acyl-enzyme at Ser307; Lys310 promotes acylation, Ser359/Lys494 assist catalysis, Asn361 positions the interpeptide group, and Thr495/Thr497 anchor the C-terminal carboxylate.</dd></div>
+            <div><dt>Structure</dt><dd>PDB 4BJP apo E. coli PBP3. Green beads illustrate the proposed substrate path only; they are not atomistic docking coordinates.</dd></div>
+          </dl>
+          <p class="quality gap">Mechanism supported; direct native-substrate affinity not determined</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="annotated-figure" aria-labelledby="annotated-title">
+      <div class="section-heading">
+        <div><p class="kicker">Annotated structural view</p><h2 id="annotated-title">Chloramphenicol interaction zones</h2></div>
+        <p class="scope-note">Zones summarize the local 23S rRNA environment; dashed lines in the interactive viewer report geometric contacts from the displayed 4V7T coordinates.</p>
+      </div>
+      <figure>
+        <img src="chloramphenicol-interaction-zones.png" alt="Annotated chloramphenicol binding pocket showing a polar contact, C2452 stacking zone, G2505 peptidyl-transferase-centre contact zone, and the surrounding 23S rRNA pocket">
+        <figcaption>The pink molecule is chloramphenicol. Zone boundaries are explanatory overlays, not calculated electron-density or energetic surfaces.</figcaption>
+      </figure>
+    </section>
+
+    <section class="evidence" aria-labelledby="evidence-title">
+      <div class="section-heading">
+        <div><p class="kicker">Validation ledger</p><h2 id="evidence-title">What each number actually means</h2></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pair</th><th>Reported value</th><th>Assay / interpretation</th><th>Comparability</th></tr></thead>
+          <tbody>
+            <tr><td>CAM–ribosome</td><td>2.2 µM K<sub>d</sub></td><td>Reversible equilibrium binding; corroborated near 2–3 µM.</td><td><span class="tag good">Equilibrium</span></td></tr>
+            <tr><td>tRNA–programmed 70S</td><td>0.0083–0.25 µM K<sub>d</sub></td><td>Reciprocal of site/ligand-specific K<sub>a</sub>; Mg²⁺ and factor dependent.</td><td><span class="tag context">Range</span></td></tr>
+            <tr><td>CEF–PBP3</td><td>0.02 ± 0.01 µM IC<sub>50,app</sub></td><td>Competition with Bocillin-FL after 30-min exposure; irreversible inhibitor.</td><td><span class="tag warn">Not Kd</span></td></tr>
+            <tr><td>Stem peptide–PBP3</td><td>N.D.</td><td>Two-substrate enzyme cycle with a covalent intermediate; no direct EcPBP3 K<sub>d</sub> found.</td><td><span class="tag gap">Do not impute</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sources" aria-labelledby="sources-title">
+      <div class="section-heading"><div><p class="kicker">Primary literature & structural records</p><h2 id="sources-title">Sources</h2></div></div>
+      <ol>
+        <li><a href="https://www.rcsb.org/structure/4V7T" target="_blank" rel="noreferrer">Dunkle et al. / PDB 4V7T</a> — experimental E. coli ribosome–chloramphenicol structure.</li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6467010/" target="_blank" rel="noreferrer">Svetlov et al., 2019</a> — high-resolution chloramphenicol pocket interactions including A2062 and C2452.</li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/4563072/" target="_blank" rel="noreferrer">Lessard & Pestka, 1972</a> — chloramphenicol, aminoacyl-oligonucleotides and E. coli ribosomes; historical K<sub>d</sub> corroboration.</li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/1537852/" target="_blank" rel="noreferrer">Lill et al., 1992</a> — standardized apparent association constants at E. coli ribosomal A/P/E sites.</li>
+        <li><a href="https://www.rcsb.org/structure/8G6Y" target="_blank" rel="noreferrer">PDB 8G6Y</a> — experimental E. coli ribosome with A- and P-site tRNAs.</li>
+        <li><a href="https://doi.org/10.1021/acsinfecdis.2c00004" target="_blank" rel="noreferrer">Shirley, Nauta & Carlson, 2022</a> — cefuroxime PBP3 IC<sub>50,app</sub> in E. coli MG1655.</li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4394777/" target="_blank" rel="noreferrer">Kocaoglu & Carlson, 2015</a> — independent cefuroxime PBP selectivity profile in E. coli DC2.</li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4038516/" target="_blank" rel="noreferrer">Sauvage et al., 2014 / PDB 4BJP</a> — E. coli PBP3 structure, native pentapeptide model and catalytic mechanism.</li>
+        <li><span>Local validation files:</span> <code>N’Pun/Simulation/NPun_simulation/reference_results/{chloramphenicol,cefuroxime}/*_deep_research.txt</code>.</li>
+      </ol>
+      <p class="footer-note">Prepared for mechanistic comparison, not for deriving clinical dose, MIC, or a universal rank of biological effectiveness.</p>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
