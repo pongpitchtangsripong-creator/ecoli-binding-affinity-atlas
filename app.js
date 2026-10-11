@@ -12,6 +12,37 @@ const models = {};
 const loaded = {};
 let interactionsVisible = false;
 
+const interactionDetails = {
+  cam: {
+    title: 'Visible CAM contacts — atom-to-atom labels',
+    note: 'Distances are measured directly from the experimental 4V7T coordinates. Dashed cylinders show geometry, not covalent bonds.',
+    items: [
+      ['CLM O2 ··· G2061 N1 — 3.05 Å', 'Polar contact'],
+      ['CLM O4 ··· G2505 OP2 — 2.88 Å', 'Polar contact to the rRNA phosphate'],
+      ['CLM O5 ··· C2452 N3 — 3.03 Å', 'Close contact beside the C2452 stacking zone']
+    ]
+  },
+  cef: {
+    title: 'Visible CEF contacts — computational pose',
+    note: 'These distances come from the displayed geometric docking pose, not an experimental cefuroxime–E. coli PBP3 structure. The red line marks the proposed acylation direction.',
+    items: [
+      ['CEF C10 ··· Ser307 Oγ — 2.11 Å', 'β-lactam carbonyl carbon toward the catalytic nucleophile'],
+      ['CEF O3 ··· Asn361 ND2 — 2.99 Å', 'Polar contact in the catalytic pocket'],
+      ['CEF C8 ··· Lys310 Nζ — 3.30 Å', 'Close pose contact; Lys310 supports catalysis']
+    ]
+  },
+  trna: {
+    title: 'Native ribosomal binding interface',
+    note: 'A- and P-site tRNAs make an extensive RNA/protein interface rather than one discrete drug-like bond. The viewer labels the two tRNAs and their placement in the ribosome.',
+    items: []
+  },
+  'pbp-native': {
+    title: 'Native PBP3 substrate — illustrative path only',
+    note: 'No atomistic E. coli PBP3–stem-peptide pose is present in this model, so drawing precise bond lines would be misleading. The green path marks the proposed substrate route near Ser307.',
+    items: []
+  }
+};
+
 function backgroundColor() {
   return matchMedia('(prefers-color-scheme: dark)').matches ? '#1b242c' : '#f4f6f8';
 }
@@ -87,6 +118,7 @@ function styleCase(key, siteView) {
   }
   viewer.render();
   if (interactionsVisible) drawInteractions(key);
+  else renderInteractionDetails(key);
 }
 
 function atom(model, selection) {
@@ -95,38 +127,68 @@ function atom(model, selection) {
 
 function contactLine(viewer, a, b, color, label) {
   if (!a || !b) return;
-  viewer.addLine({start:{x:a.x,y:a.y,z:a.z}, end:{x:b.x,y:b.y,z:b.z}, color, dashed:true, dashLength:.28, gapLength:.18, linewidth:2});
+  const start = {x:a.x,y:a.y,z:a.z};
+  const end = {x:b.x,y:b.y,z:b.z};
+  const segments = 7;
+  for (let i = 0; i < segments; i += 2) {
+    const t1 = i / segments;
+    const t2 = Math.min((i + 1) / segments, 1);
+    viewer.addCylinder({
+      start:{x:start.x+(end.x-start.x)*t1,y:start.y+(end.y-start.y)*t1,z:start.z+(end.z-start.z)*t1},
+      end:{x:start.x+(end.x-start.x)*t2,y:start.y+(end.y-start.y)*t2,z:start.z+(end.z-start.z)*t2},
+      radius:.105,
+      color,
+      opacity:1
+    });
+  }
+  viewer.addSphere({center:start,radius:.16,color,opacity:1});
+  viewer.addSphere({center:end,radius:.16,color,opacity:1});
   const d = Math.hypot(a.x-b.x, a.y-b.y, a.z-b.z);
-  viewer.addLabel(`${label}  ${d.toFixed(2)} Å`, {
+  viewer.addLabel(`${label}  •  ${d.toFixed(2)} Å`, {
     position:{x:(a.x+b.x)/2,y:(a.y+b.y)/2,z:(a.z+b.z)/2},
-    fontColor:color, backgroundColor:'rgba(255,255,255,.86)', borderColor:color,
-    borderThickness:1, fontSize:11, inFront:true
+    fontColor:'#17212b', backgroundColor:'#ffffff', backgroundOpacity:.94, borderColor:color,
+    borderThickness:2, fontSize:15, inFront:true
   });
+}
+
+function renderInteractionDetails(key) {
+  const panel = document.getElementById('interaction-details');
+  if (!interactionsVisible) {
+    panel.hidden = true;
+    panel.innerHTML = '';
+    return;
+  }
+  const detail = interactionDetails[key];
+  const items = detail.items.length
+    ? `<ul>${detail.items.map(([pair,type]) => `<li>${pair}<span class="contact-type">${type}</span></li>`).join('')}</ul>`
+    : '';
+  panel.innerHTML = `<h3>${detail.title}</h3><p>${detail.note}</p>${items}`;
+  panel.hidden = false;
 }
 
 function drawInteractions(key) {
   const viewer = viewers[key], model = models[key];
   if (!viewer || !model) return;
   if (key === 'cam') {
-    contactLine(viewer, atom(model,{resn:'CLM',atom:'O2'}), atom(model,{chain:'F',resi:2061,atom:'N1'}), '#16AFC6', 'polar contact');
-    contactLine(viewer, atom(model,{resn:'CLM',atom:'O4'}), atom(model,{chain:'F',resi:2505,atom:'OP2'}), '#16AFC6', 'polar contact');
-    contactLine(viewer, atom(model,{resn:'CLM',atom:'O5'}), atom(model,{chain:'F',resi:2452,atom:'N3'}), '#249D8F', 'close contact');
+    contactLine(viewer, atom(model,{resn:'CLM',atom:'O2'}), atom(model,{chain:'F',resi:2061,atom:'N1'}), '#16AFC6', 'CLM O2 ··· G2061 N1');
+    contactLine(viewer, atom(model,{resn:'CLM',atom:'O4'}), atom(model,{chain:'F',resi:2505,atom:'OP2'}), '#16AFC6', 'CLM O4 ··· G2505 OP2');
+    contactLine(viewer, atom(model,{resn:'CLM',atom:'O5'}), atom(model,{chain:'F',resi:2452,atom:'N3'}), '#249D8F', 'CLM O5 ··· C2452 N3');
     viewer.addSurface($3Dmol.SurfaceType.VDW,{color:'#249D8F',opacity:.18},{chain:'F',resi:2452});
     viewer.addSurface($3Dmol.SurfaceType.VDW,{color:'#16AFC6',opacity:.12},{chain:'F',resi:[2061,2062,2505]});
     viewer.addSurface($3Dmol.SurfaceType.VDW,{color:'#E5A323',opacity:.10},{chain:'F',resi:[2451,2503,2504,2506]});
-    viewer.addLabel('C2452 stacking zone',{fontColor:'#249D8F',backgroundColor:'rgba(255,255,255,.88)',borderColor:'#249D8F',borderThickness:1,fontSize:12,inFront:true},{chain:'F',resi:2452});
-    viewer.addLabel('G2505 polar zone',{fontColor:'#16AFC6',backgroundColor:'rgba(255,255,255,.88)',borderColor:'#16AFC6',borderThickness:1,fontSize:12,inFront:true},{chain:'F',resi:2505});
+    viewer.addLabel('C2452 • stacking zone',{fontColor:'#17212b',backgroundColor:'#ffffff',backgroundOpacity:.94,borderColor:'#249D8F',borderThickness:2,fontSize:15,inFront:true},{chain:'F',resi:2452});
+    viewer.addLabel('A2062 • adjacent pocket wall',{fontColor:'#17212b',backgroundColor:'#ffffff',backgroundOpacity:.94,borderColor:'#E5A323',borderThickness:2,fontSize:15,inFront:true},{chain:'F',resi:2062});
+    viewer.addLabel('G2505 • phosphate contact',{fontColor:'#17212b',backgroundColor:'#ffffff',backgroundOpacity:.94,borderColor:'#16AFC6',borderThickness:2,fontSize:15,inFront:true},{chain:'F',resi:2505});
     viewer.zoomTo({resn:'CLM'});
     viewer.zoom(.82);
   } else if (key === 'cef') {
     const ser = atom(model,{resi:307,atom:'OG'});
-    const ligandAtoms = model.selectedAtoms({resn:'LIG'});
-    if (ser && ligandAtoms.length) {
-      const nearest = ligandAtoms.reduce((best,a)=>Math.hypot(a.x-ser.x,a.y-ser.y,a.z-ser.z)<Math.hypot(best.x-ser.x,best.y-ser.y,best.z-ser.z)?a:best,ligandAtoms[0]);
-      contactLine(viewer, nearest, ser, '#D96868', 'pose proximity to Ser307');
-    }
+    contactLine(viewer, atom(model,{resn:'LIG',atom:'C10'}), ser, '#D96868', 'CEF C10 ··· Ser307 Oγ');
+    contactLine(viewer, atom(model,{resn:'LIG',atom:'O3'}), atom(model,{resi:361,atom:'ND2'}), '#16AFC6', 'CEF O3 ··· Asn361 ND2');
+    contactLine(viewer, atom(model,{resn:'LIG',atom:'C8'}), atom(model,{resi:310,atom:'NZ'}), '#E5A323', 'CEF C8 ··· Lys310 Nζ');
     viewer.addSurface($3Dmol.SurfaceType.VDW,{color:'#9FA1FF',opacity:.14},{resi:[307,310,359,361,494,495,496,497]});
-    viewer.addLabel('catalytic zone',{fontColor:'#D96868',backgroundColor:'rgba(255,255,255,.88)',borderColor:'#D96868',borderThickness:1,fontSize:12,inFront:true},{resi:307});
+    viewer.addLabel('Ser307 • catalytic nucleophile',{fontColor:'#17212b',backgroundColor:'#ffffff',backgroundOpacity:.94,borderColor:'#D96868',borderThickness:2,fontSize:15,inFront:true},{resi:307});
+    viewer.addLabel('Ser307 + Thr497 • oxyanion-hole backbone',{fontColor:'#17212b',backgroundColor:'#ffffff',backgroundOpacity:.94,borderColor:'#9FA1FF',borderThickness:2,fontSize:14,inFront:true},{resi:497,atom:'N'});
     viewer.zoomTo({resn:'LIG'});
     viewer.zoom(.86);
   } else if (key === 'trna') {
@@ -134,6 +196,7 @@ function drawInteractions(key) {
     viewer.addLabel('P-site tRNA',{fontColor:COLORS.substrate,backgroundColor:'rgba(255,255,255,.88)',borderColor:COLORS.substrate,borderThickness:1,fontSize:12,inFront:true},{chain:'Z'});
     viewer.zoomTo({chain:['Y','Z']});
   }
+  renderInteractionDetails(key);
   viewer.render();
 }
 
@@ -142,7 +205,8 @@ function activate(key) {
   interactionsVisible = false;
   const interactionButton = document.getElementById('toggle-interactions');
   interactionButton.setAttribute('aria-pressed','false');
-  interactionButton.textContent = 'Interactions';
+  interactionButton.textContent = 'Show interactions';
+  renderInteractionDetails(key);
   document.querySelectorAll('[role="tab"][data-case]').forEach(button => {
     const selected = button.dataset.case === key;
     button.setAttribute('aria-selected', selected ? 'true' : 'false');
@@ -159,7 +223,7 @@ document.getElementById('focus-site').addEventListener('click', () => styleCase(
 document.getElementById('toggle-interactions').addEventListener('click', event => {
   interactionsVisible = event.currentTarget.getAttribute('aria-pressed') !== 'true';
   event.currentTarget.setAttribute('aria-pressed', interactionsVisible ? 'true' : 'false');
-  event.currentTarget.textContent = interactionsVisible ? 'Hide interactions' : 'Interactions';
+  event.currentTarget.textContent = interactionsVisible ? 'Hide interactions' : 'Show interactions';
   styleCase(activeCase, interactionsVisible);
 });
 document.getElementById('toggle-spin').addEventListener('click', event => {

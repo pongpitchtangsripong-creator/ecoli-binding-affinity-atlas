@@ -65,7 +65,7 @@
         <div class="viewer-actions">
           <button id="focus-overview" type="button">Overview</button>
           <button id="focus-site" type="button">Binding site</button>
-          <button id="toggle-interactions" type="button" aria-pressed="false">Interactions</button>
+          <button id="toggle-interactions" type="button" aria-pressed="false">Show interactions</button>
           <button id="toggle-spin" type="button" aria-pressed="false">Auto-rotate</button>
         </div>
       </div>
@@ -76,6 +76,8 @@
         <button role="tab" aria-selected="false" aria-controls="panel-cef" id="tab-cef" data-case="cef">03 CEF + PBP3</button>
         <button role="tab" aria-selected="false" aria-controls="panel-pbp-native" id="tab-pbp-native" data-case="pbp-native">04 PBP3 + native substrate</button>
       </div>
+
+      <aside id="interaction-details" class="interaction-details" aria-live="polite" hidden></aside>
 
       <div class="case-panel" id="panel-cam" role="tabpanel" aria-labelledby="tab-cam">
         <div class="viewer-wrap"><div id="viewer-cam" class="viewer"><div class="loading">Loading 4V7T-derived model…</div></div></div>
